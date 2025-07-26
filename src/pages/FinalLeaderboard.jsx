@@ -62,7 +62,7 @@ export default function FinalLeaderboard() {
   return (
     <div className="relative min-h-screen bg-gradient-to-b from-indigo-900 via-purple-900 to-black text-white p-6 overflow-hidden font-sans transition-all duration-1000">
       {/* Background bintang */}
-      <div className="absolute inset-0 z-0 bg-[url('/stars-bg.svg')] bg-cover opacity-10 pointer-events-none" />
+      <div className="absolute inset-0 z-0 bg-[url('https://images.unsplash.com/photo-1532298229144-0ec0c57515c7?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80')] bg-cover opacity-10 pointer-events-none" />
 
       {/* Judul */}
       <h1 className="text-5xl font-extrabold text-yellow-300 text-center drop-shadow-lg animate-pulse mb-6 z-10 transition-all">
