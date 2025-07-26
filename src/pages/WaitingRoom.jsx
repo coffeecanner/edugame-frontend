@@ -10,8 +10,6 @@ const WaitingRoom = () => {
   const [participants, setParticipants] = useState([]);
   const [roomStatus, setRoomStatus] = useState('waiting');
   const [roomInfo, setRoomInfo] = useState(null);
-  const [isCountingDown, setIsCountingDown] = useState(false);
-  const [bigCountdown, setBigCountdown] = useState(null);
 
   // Fetch peserta
   const fetchParticipants = async () => {
@@ -24,14 +22,15 @@ const WaitingRoom = () => {
     }
   };
 
-  // Cek status room
+  // Cek status room, langsung navigasi jika sudah mulai
   const fetchRoomStatus = async () => {
     try {
       const res = await fetch(`https://edugame-api.fly.dev/status_room/${roomId}`);
       const data = await res.json();
-      if (data.waktu_mulai && !isCountingDown) {
+      if (data.waktu_mulai) {
         setRoomStatus('started');
-        setIsCountingDown(true);
+        // Langsung navigasi ke leaderboard tanpa countdown
+        navigate(`/live-leaderboard/${roomId}`);
       }
     } catch (err) {
       console.error('Gagal cek status room:', err);
@@ -48,27 +47,6 @@ const WaitingRoom = () => {
       console.error('Gagal ambil info room:', err);
     }
   };
-
-  // 🔥 Megah countdown 5..4..3..2..1..MULAI!
-  useEffect(() => {
-    if (isCountingDown) {
-      let current = 5;
-
-      const interval = setInterval(() => {
-        if (current === 0) {
-          setBigCountdown("MULAI!");
-          setTimeout(() => setBigCountdown(null), 1000);
-          navigate(`/live-leaderboard/${roomId}`);
-          clearInterval(interval);
-        } else {
-          setBigCountdown(current);
-          current--;
-        }
-      }, 1000);
-
-      return () => clearInterval(interval);
-    }
-  }, [isCountingDown]);
 
   // Auto refresh data
   useEffect(() => {
@@ -91,7 +69,8 @@ const WaitingRoom = () => {
       const data = await res.json();
       if (data.start_time) {
         setRoomStatus('started');
-        setIsCountingDown(true);
+        // Langsung navigasi ke leaderboard tanpa countdown
+        navigate(`/live-leaderboard/${roomId}`);
       }
     } catch (err) {
       console.error('Gagal mulai game:', err);
@@ -104,15 +83,6 @@ const WaitingRoom = () => {
     <div className="relative min-h-screen font-sans text-white">
       <ParticleCanvas />
       <div className="absolute inset-0 z-10 bg-gradient-to-br from-indigo-900 via-purple-900 to-black opacity-90" />
-
-      {/* Countdown Megah Fullscreen */}
-      {bigCountdown && (
-        <div className="absolute inset-0 z-50 bg-black/80 flex items-center justify-center">
-          <h1 className="text-white text-[12vw] font-extrabold countdown-number select-none drop-shadow-2xl">
-            {bigCountdown}
-          </h1>
-        </div>
-      )}
 
       <div className="relative z-20 grid grid-cols-3 gap-6 p-10 min-h-screen">
         {/* Info Room */}
@@ -140,7 +110,7 @@ const WaitingRoom = () => {
 
           {roomStatus === 'started' && (
             <div className="mt-4 text-purple-300 text-lg font-bold">
-              🔥 Get Ready...
+              🔥 Game sudah dimulai, mengalihkan ke leaderboard...
             </div>
           )}
         </div>
@@ -149,12 +119,13 @@ const WaitingRoom = () => {
         <div className="col-span-2 bg-white/10 backdrop-blur-xl p-6 rounded-xl shadow-xl border border-purple-300 overflow-y-auto">
           <h2 className="text-xl font-semibold text-purple-200 mb-4">🧑‍🤝‍🧑 Daftar Peserta</h2>
           <ul className="space-y-2 max-h-[65vh] overflow-y-auto pr-2">
-            {participants.map((p, i) => (
-              <li key={i} className="bg-white/5 border border-purple-400/10 rounded-md px-4 py-2">
-                <span className="font-bold mr-2">{i + 1}.</span> 🌟 {p.nama}
-              </li>
-            ))}
-            {participants.length === 0 && (
+            {participants.length > 0 ? (
+              participants.map((p, i) => (
+                <li key={i} className="bg-white/5 border border-purple-400/10 rounded-md px-4 py-2">
+                  <span className="font-bold mr-2">{i + 1}.</span> 🌟 {p.nama}
+                </li>
+              ))
+            ) : (
               <li className="text-gray-300">Belum ada peserta yang masuk.</li>
             )}
           </ul>
