@@ -53,24 +53,24 @@ const LiveLeaderboard = () => {
       if (Array.isArray(data)) {
         const updatedScores = {};
         data.forEach((entry) => {
-          const prevScore = lastScores[entry.nama] || 0;
+          const prevScore = lastScores[entry.nama_user] || 0;
           if (entry.skor > prevScore) {
-            updatedScores[entry.nama] = entry.skor;
+            updatedScores[entry.nama_user] = entry.skor;
           }
         });
         setLastScores((prev) => ({ ...prev, ...updatedScores }));
 
         const newRanks = {};
         data.forEach((entry, idx) => {
-          newRanks[entry.nama] = idx;
+          newRanks[entry.nama_user] = idx;
         });
 
         const changes = {};
-        Object.keys(newRanks).forEach((nama) => {
-          if (nama in lastRanks) {
-            const diff = lastRanks[nama] - newRanks[nama];
+        Object.keys(newRanks).forEach((nama_user) => {
+          if (nama_user in lastRanks) {
+            const diff = lastRanks[nama_user] - newRanks[nama_user];
             if (diff !== 0) {
-              changes[nama] = diff;
+              changes[nama_user] = diff;
             }
           }
         });
