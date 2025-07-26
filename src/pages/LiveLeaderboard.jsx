@@ -181,7 +181,6 @@ const LiveLeaderboard = () => {
                       ${rankDiff > 0 ? 'animate-rise' : rankDiff < 0 ? 'animate-fall' : ''}`}
                   >
                     <span>#{index + 1} — {entry.nama_user}</span>
-                    <span className="font-semibold">{entry.skor} poin</span>
                   </li>
                 );
               })
