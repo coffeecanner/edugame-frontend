@@ -48,7 +48,7 @@ const LiveLeaderboard = () => {
 
   const fetchLeaderboard = async () => {
     try {
-      const res = await fetch(`https://edugame-api.fly.dev/final_leaderboard/${roomId}`);
+      const res = await fetch(`https://edugame-api.fly.dev/leaderboard/${roomId}`);
       const data = await res.json();
       if (Array.isArray(data)) {
         const updatedScores = {};
