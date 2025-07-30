@@ -30,7 +30,7 @@ export default function FinalLeaderboard() {
   };
 
   useEffect(() => {
-    if (finalResults.length >= 1) {
+    if (finalResults.length > 0) {
       setTimeout(() => {
         confetti({
           particleCount: 200,
@@ -59,14 +59,14 @@ export default function FinalLeaderboard() {
 
       {!loading && finalResults.length === 0 && (
         <p className="text-red-500 font-semibold mt-4">
-          Tidak ada data leaderboard untuk room ini.
+          Tidak ada peserta atau semua peserta belum menyelesaikan game.
         </p>
       )}
 
       {/* PODIUM BESAR */}
-      {stage === "podium" && finalResults.length >= 1 && !loading && (
+      {stage === "podium" && finalResults.length > 0 && (
         <div className="flex items-end justify-center gap-8 mb-10">
-          {finalResults.slice(0, 3).map((player, i) => {
+          {[...finalResults.slice(0, 3)].map((player, i) => {
             const height = [180, 140, 120][i] || 100;
             const bgColor =
               i === 0 ? "bg-yellow-400" : i === 1 ? "bg-gray-400" : "bg-amber-400";
@@ -77,8 +77,8 @@ export default function FinalLeaderboard() {
                 style={{ height: `${height}px`, width: "120px" }}
               >
                 <div className="text-3xl mb-2">{getMedal(i)}</div>
-                <div className="text-lg">{player?.nama}</div>
-                <div className="text-sm mt-1 font-mono">{player?.skor} pts</div>
+                <div className="text-lg">{player.nama}</div>
+                <div className="text-sm mt-1 font-mono">{player.skor} pts</div>
               </div>
             );
           })}
@@ -86,7 +86,7 @@ export default function FinalLeaderboard() {
       )}
 
       {/* LIST PERINGKAT */}
-      {stage === "result" && !loading && finalResults.length > 0 && (
+      {stage === "result" && finalResults.length > 0 && (
         <div className="w-full max-w-xl bg-gray-100 rounded-lg p-6 shadow-lg">
           <h2 className="text-2xl font-semibold mb-4 text-purple-700">🏁 Daftar Peringkat</h2>
           <ul>
