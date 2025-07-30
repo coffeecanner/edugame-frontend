@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import ParticleCanvas from '@/components/ParticleCanvas';
 import { Button } from '@/components/ui/button';
 import Lottie from 'lottie-react';
-import rocketAnimation from '@/assets/lottie/rocket.json'; // optional
+import rocketAnimation from '@/assets/rocket.json'; // optional
 
 const LiveLeaderboard = () => {
   const { roomId } = useParams();
