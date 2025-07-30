@@ -19,6 +19,7 @@ export default function FinalLeaderboard() {
       const res = await fetch(`https://edugame-api.fly.dev/final_leaderboard/${roomId}`);
       if (!res.ok) throw new Error("Belum semua peserta selesai.");
       const data = await res.json();
+      if (!Array.isArray(data)) throw new Error("Data tidak valid");
       setFinalResults(data);
     } catch (err) {
       alert("Leaderboard belum bisa ditampilkan. Coba lagi nanti.");
@@ -29,7 +30,7 @@ export default function FinalLeaderboard() {
   };
 
   useEffect(() => {
-    if (finalResults.length >= 3) {
+    if (finalResults.length >= 1) {
       setTimeout(() => {
         confetti({
           particleCount: 200,
@@ -56,21 +57,26 @@ export default function FinalLeaderboard() {
 
       {loading && <p>Loading leaderboard...</p>}
 
+      {!loading && finalResults.length === 0 && (
+        <p className="text-red-500 font-semibold mt-4">
+          Tidak ada data leaderboard untuk room ini.
+        </p>
+      )}
+
       {/* PODIUM BESAR */}
-      {stage === "podium" && finalResults.length >= 3 && !loading && (
+      {stage === "podium" && finalResults.length >= 1 && !loading && (
         <div className="flex items-end justify-center gap-8 mb-10">
-          {[1, 0, 2].map((rank, i) => {
-            const player = finalResults[rank];
-            const height = [120, 180, 140][i];
+          {finalResults.slice(0, 3).map((player, i) => {
+            const height = [180, 140, 120][i] || 100;
             const bgColor =
-              rank === 0 ? "bg-yellow-400" : rank === 1 ? "bg-gray-400" : "bg-amber-400";
+              i === 0 ? "bg-yellow-400" : i === 1 ? "bg-gray-400" : "bg-amber-400";
             return (
               <div
-                key={rank}
+                key={i}
                 className={`flex flex-col items-center justify-end rounded-lg px-6 py-4 text-black font-bold shadow-md ${bgColor}`}
                 style={{ height: `${height}px`, width: "120px" }}
               >
-                <div className="text-3xl mb-2">{getMedal(rank)}</div>
+                <div className="text-3xl mb-2">{getMedal(i)}</div>
                 <div className="text-lg">{player?.nama}</div>
                 <div className="text-sm mt-1 font-mono">{player?.skor} pts</div>
               </div>
@@ -80,7 +86,7 @@ export default function FinalLeaderboard() {
       )}
 
       {/* LIST PERINGKAT */}
-      {stage === "result" && !loading && (
+      {stage === "result" && !loading && finalResults.length > 0 && (
         <div className="w-full max-w-xl bg-gray-100 rounded-lg p-6 shadow-lg">
           <h2 className="text-2xl font-semibold mb-4 text-purple-700">🏁 Daftar Peringkat</h2>
           <ul>
