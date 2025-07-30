@@ -54,6 +54,7 @@ const LiveLeaderboard = () => {
         const updatedScores = {};
         data.forEach((entry) => {
           const prevScore = lastScores[entry.nama_user] || 0;
+          
           if (entry.skor > prevScore) {
             updatedScores[entry.nama_user] = entry.skor;
           }
@@ -180,7 +181,8 @@ const LiveLeaderboard = () => {
                       ${newScore ? 'animate-pulse scale-[1.03]' : ''}
                       ${rankDiff > 0 ? 'animate-rise' : rankDiff < 0 ? 'animate-fall' : ''}`}
                   >
-                    <span>#{index + 1} — {entry.nama_user}</span>
+                    <span className="flex-1">#{index + 1} — {entry.nama_user}</span>
+                    <span className="font-mono text-lg">{entry.skor}</span>
                   </li>
                 );
               })
