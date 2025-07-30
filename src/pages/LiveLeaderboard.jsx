@@ -1,7 +1,9 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import ParticleCanvas from '@/components/ParticleCanvas';
 import { Button } from '@/components/ui/button';
+import Lottie from 'lottie-react';
+import rocketAnimation from '@/assets/lottie/rocket.json'; // optional
 
 const LiveLeaderboard = () => {
   const { roomId } = useParams();
@@ -54,7 +56,6 @@ const LiveLeaderboard = () => {
         const updatedScores = {};
         data.forEach((entry) => {
           const prevScore = lastScores[entry.nama_user] || 0;
-          
           if (entry.skor > prevScore) {
             updatedScores[entry.nama_user] = entry.skor;
           }
@@ -109,68 +110,66 @@ const LiveLeaderboard = () => {
   useEffect(() => {
     fetchRoomInfo();
     fetchLeaderboard();
-
     const interval = setInterval(() => {
       fetchLeaderboard();
       cekStatusRoom();
     }, 3000);
-
     return () => clearInterval(interval);
   }, []);
 
   useEffect(() => {
     if (!endTime) return;
-
     const interval = setInterval(() => {
       updateTimeLeft();
     }, 1000);
-
     return () => clearInterval(interval);
   }, [endTime]);
 
   return (
-    <div className="relative min-h-screen font-sans text-white">
+    <div className="relative min-h-screen font-sans text-white overflow-hidden bg-[#0d1117]">
       <ParticleCanvas />
-      <div className="absolute inset-0 z-10 bg-gradient-to-br from-indigo-900 via-purple-900 to-black opacity-90" />
+      <div className="absolute inset-0 z-10 bg-gradient-to-br from-purple-900 via-indigo-900 to-black opacity-80" />
 
-      <div className="relative z-20 grid grid-cols-3 gap-8 p-10 min-h-screen">
-        <div className="col-span-1 bg-white/10 backdrop-blur-xl p-6 rounded-xl shadow-xl border border-purple-300">
-          <h2 className="text-xl font-semibold text-purple-200 mb-4">🕒 Waktu Tersisa</h2>
-          <div className="text-4xl font-mono text-purple-100 mb-6">{timeLeft}</div>
+      <div className="relative z-20 grid grid-cols-3 gap-8 p-10 min-h-screen items-start">
+        {/* KOTAK INFO */}
+        <div className="col-span-1 bg-white/10 backdrop-blur-2xl p-6 rounded-2xl shadow-xl border border-purple-400/40 space-y-4 animate-fadeIn">
+          <h2 className="text-xl font-bold text-purple-200">🕒 Waktu Tersisa</h2>
+          <div className="text-5xl font-mono text-purple-100">{timeLeft}</div>
 
           {roomInfo && (
-            <div className="text-sm text-purple-100 space-y-1">
-              <p><strong>Nama Room:</strong> {roomInfo.nama_room}</p>
-              <p><strong>Tema:</strong> {roomInfo.tema}</p>
-              <p><strong>Durasi:</strong> {roomInfo.durasi_menit} menit</p>
-              <p><strong>Materi:</strong> {roomInfo.jumlah_materi}</p>
-              <p><strong>Total Soal:</strong> {roomInfo.jumlah_soal}</p>
+            <div className="text-sm text-purple-100 mt-4 space-y-1">
+              <p><strong>📛 Nama Room:</strong> {roomInfo.nama_room}</p>
+              <p><strong>🎨 Tema:</strong> {roomInfo.tema}</p>
+              <p><strong>⏳ Durasi:</strong> {roomInfo.durasi_menit} menit</p>
+              <p><strong>📚 Materi:</strong> {roomInfo.jumlah_materi}</p>
+              <p><strong>❓ Total Soal:</strong> {roomInfo.jumlah_soal}</p>
             </div>
           )}
 
           <Button
             onClick={handleSelesaikan}
-            className="mt-8 w-full bg-red-600 hover:bg-red-700 text-white py-2 rounded-xl"
+            className="mt-6 w-full bg-red-600 hover:bg-red-700 text-white py-3 rounded-xl font-semibold"
           >
             ❌ Selesaikan Game Sekarang
           </Button>
         </div>
 
-        <div className="col-span-2 bg-white/10 backdrop-blur-xl p-6 rounded-xl shadow-xl border border-purple-300">
-          <h2 className="text-2xl font-bold text-purple-200 mb-6">🏁 Leaderboard Langsung</h2>
+        {/* LEADERBOARD */}
+        <div className="col-span-2 bg-white/10 backdrop-blur-2xl p-8 rounded-2xl shadow-xl border border-purple-400/40 animate-fadeInUp">
+          <h2 className="text-3xl font-extrabold text-purple-200 mb-6">🏁 Leaderboard Langsung</h2>
 
-          <ul className="space-y-2">
-            {leaderboard.length === 0 ? (
-              <li className="text-gray-300">⏳ Menunggu peserta menyelesaikan permainan...</li>
-            ) : (
-              leaderboard.map((entry, index) => {
-                const newScore = lastScores[entry.nama] && lastScores[entry.nama] === entry.skor;
-                const rankDiff = rankChanges[entry.nama] || 0;
+          {leaderboard.length === 0 ? (
+            <div className="text-center text-gray-300">⏳ Menunggu peserta menyelesaikan permainan...</div>
+          ) : (
+            <ul className="space-y-3">
+              {leaderboard.map((entry, index) => {
+                const newScore = lastScores[entry.nama_user] === entry.skor;
+                const rankDiff = rankChanges[entry.nama_user] || 0;
 
                 return (
                   <li
                     key={index}
-                    className={`flex justify-between items-center px-6 py-3 rounded-lg shadow-lg transition-all duration-500 transform
+                    className={`flex justify-between items-center px-6 py-4 rounded-xl shadow-lg transition-all duration-300 transform
                       ${index === 0
                         ? 'bg-yellow-400/30 text-yellow-100 font-bold'
                         : index === 1
@@ -178,16 +177,23 @@ const LiveLeaderboard = () => {
                         : index === 2
                         ? 'bg-amber-300/20 text-amber-100'
                         : 'bg-white/5 text-white'}
-                      ${newScore ? 'animate-pulse scale-[1.03]' : ''}
+                      ${newScore ? 'animate-pulse scale-[1.02]' : ''}
                       ${rankDiff > 0 ? 'animate-rise' : rankDiff < 0 ? 'animate-fall' : ''}`}
                   >
-                    <span className="flex-1">#{index + 1} — {entry.nama_user}</span>
-                    <span className="font-mono text-lg">{entry.skor}</span>
+                    <span className="flex-1">
+                      #{index + 1} — {entry.nama_user}
+                    </span>
+                    <span className="font-mono text-xl">{entry.skor} pts</span>
                   </li>
                 );
-              })
-            )}
-          </ul>
+              })}
+            </ul>
+          )}
+
+          {/* Optional Lottie rocket on corner */}
+          <div className="absolute bottom-4 right-4 w-24 opacity-60">
+            <Lottie animationData={rocketAnimation} loop autoplay />
+          </div>
         </div>
       </div>
     </div>
