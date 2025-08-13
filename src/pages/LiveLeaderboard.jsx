@@ -7,6 +7,7 @@ import rocketAnimation from '@/assets/rocket.json'; // optional
 
 const LiveLeaderboard = () => {
   const navigate = useNavigate();
+  const { roomId } = useParams();
 
   const [leaderboard, setLeaderboard] = useState([]);
   const [roomInfo, setRoomInfo] = useState(null);
