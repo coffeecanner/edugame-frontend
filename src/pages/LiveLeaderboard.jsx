@@ -5,6 +5,12 @@ import { Button } from '@/components/ui/button';
 import Lottie from 'lottie-react';
 import rocketAnimation from '@/assets/rocket.json'; // optional
 
+// 👉 helper: normalisasi skor ke persen
+const toPercent = (val, total) => {
+  if (total && val <= total) return Math.round((val / total) * 100); // raw -> %
+  return Math.round(val ?? 0); // sudah % atau fallback
+};
+
 const LiveLeaderboard = () => {
   const navigate = useNavigate();
   const { roomId } = useParams();
@@ -38,7 +44,6 @@ const LiveLeaderboard = () => {
     if (!targetTime) return;
     const now = new Date();
     const diff = targetTime - now;
-
     if (diff <= 0) {
       setTimeLeft('00:00');
     } else {
@@ -53,8 +58,11 @@ const LiveLeaderboard = () => {
       const res = await fetch(`https://edugame-api.fly.dev/leaderboard/${roomId}`);
       const data = await res.json();
       if (Array.isArray(data)) {
+        // sort desc biar konsisten
+        const sorted = data.slice().sort((a, b) => b.skor - a.skor);
+
         const updatedScores = {};
-        data.forEach((entry) => {
+        sorted.forEach((entry) => {
           const prevScore = lastScores[entry.nama_user] || 0;
           if (entry.skor > prevScore) {
             updatedScores[entry.nama_user] = entry.skor;
@@ -63,7 +71,7 @@ const LiveLeaderboard = () => {
         setLastScores((prev) => ({ ...prev, ...updatedScores }));
 
         const newRanks = {};
-        data.forEach((entry, idx) => {
+        sorted.forEach((entry, idx) => {
           newRanks[entry.nama_user] = idx;
         });
 
@@ -71,15 +79,13 @@ const LiveLeaderboard = () => {
         Object.keys(newRanks).forEach((nama_user) => {
           if (nama_user in lastRanks) {
             const diff = lastRanks[nama_user] - newRanks[nama_user];
-            if (diff !== 0) {
-              changes[nama_user] = diff;
-            }
+            if (diff !== 0) changes[nama_user] = diff;
           }
         });
 
         setLastRanks(newRanks);
         setRankChanges(changes);
-        setLeaderboard(data);
+        setLeaderboard(sorted);
       }
     } catch (err) {
       console.error('Gagal ambil leaderboard:', err);
@@ -98,7 +104,7 @@ const LiveLeaderboard = () => {
   const cekStatusRoom = async () => {
     try {
       const res = await fetch(`https://edugame-api.fly.dev/status_room/${roomId}`);
-      const data = await res.json();
+    const data = await res.json();
       if (data.aktif === false) {
         navigate(`/final-leaderboard/${roomId}`);
       }
@@ -183,7 +189,10 @@ const LiveLeaderboard = () => {
                     <span className="flex-1">
                       #{index + 1} — {entry.nama_user}
                     </span>
-                    <span className="font-mono text-xl">{entry.skor} pts</span>
+                    {/* 👉 tampilkan persen */}
+                    <span className="font-mono text-xl">
+                      {toPercent(entry.skor, roomInfo?.jumlah_soal)}%
+                    </span>
                   </li>
                 );
               })}
@@ -191,9 +200,8 @@ const LiveLeaderboard = () => {
           )}
 
           {/* <div className="absolute bottom-4 right-4 w-24 opacity-60">
-  <Lottie animationData={rocketAnimation} loop autoplay />
-</div> */}
-
+            <Lottie animationData={rocketAnimation} loop autoplay />
+          </div> */}
         </div>
       </div>
     </div>

@@ -1,7 +1,13 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import confetti from "canvas-confetti";
-import ParticleCanvas from "@/components/ParticleCanvas"; // pastikan path ini benar
+import ParticleCanvas from "@/components/ParticleCanvas";
+
+// 👉 helper: normalisasi skor ke persen
+const toPercent = (val, total /* boleh null */) => {
+  if (total && val <= total) return Math.round((val / total) * 100);
+  return Math.round(val ?? 0);
+};
 
 export default function FinalLeaderboard() {
   const { roomId } = useParams();
@@ -20,7 +26,8 @@ export default function FinalLeaderboard() {
       const res = await fetch(`https://edugame-api.fly.dev/final_leaderboard/${roomId}`);
       if (!res.ok) throw new Error("Belum semua peserta selesai.");
       const data = await res.json();
-      setFinalResults(data);
+      // sort desc biar konsisten
+      setFinalResults(data.slice().sort((a, b) => b.skor - a.skor));
     } catch (err) {
       alert("Leaderboard belum bisa ditampilkan. Coba lagi nanti.");
       navigate(`/`);
@@ -32,19 +39,11 @@ export default function FinalLeaderboard() {
   useEffect(() => {
     if (finalResults.length > 0) {
       setTimeout(() => {
-        confetti({
-          particleCount: 200,
-          spread: 70,
-          origin: { y: 0.6 },
-        });
+        confetti({ particleCount: 200, spread: 70, origin: { y: 0.6 } });
       }, 1000);
-  
-      setTimeout(() => {
-        setStage("result");
-      }, 3000);
+      setTimeout(() => setStage("result"), 3000);
     }
   }, [finalResults]);
-  
 
   const getMedal = (rank) => {
     if (rank === 0) return "🥇";
@@ -81,7 +80,8 @@ export default function FinalLeaderboard() {
                 >
                   <div className="text-3xl mb-2">{getMedal(rank)}</div>
                   <div className="text-lg">{player?.nama}</div>
-                  <div className="text-sm mt-1 font-mono">{player?.skor} pts</div>
+                  {/* 👉 tampilkan persen */}
+                  <div className="text-sm mt-1 font-mono">{toPercent(player?.skor, null)}%</div>
                 </div>
               );
             })}
@@ -110,7 +110,8 @@ export default function FinalLeaderboard() {
                     <span className="text-lg font-semibold flex items-center gap-3">
                       <span>{getMedal(idx)}</span> {player.nama}
                     </span>
-                    <span className="font-mono text-lg">{player.skor} pts</span>
+                    {/* 👉 tampilkan persen */}
+                    <span className="font-mono text-lg">{toPercent(player.skor, null)}%</span>
                   </li>
                 );
               })}
