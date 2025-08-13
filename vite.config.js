@@ -9,8 +9,5 @@ export default defineConfig({
       '@': path.resolve(__dirname, './src'),
     },
   },
-  build: {
-    rollupOptions: {
-    },
-  },
+  // Tidak perlu external: ['lottie-react'] karena bikin bundling error di Vercel
 });
