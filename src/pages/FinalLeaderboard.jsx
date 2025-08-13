@@ -30,7 +30,7 @@ export default function FinalLeaderboard() {
   };
 
   useEffect(() => {
-    if (finalResults.length >= 3) {
+    if (finalResults.length > 0) {
       setTimeout(() => {
         confetti({
           particleCount: 200,
@@ -38,9 +38,13 @@ export default function FinalLeaderboard() {
           origin: { y: 0.6 },
         });
       }, 1000);
-      setTimeout(() => setStage("result"), 3000);
+  
+      setTimeout(() => {
+        setStage("result");
+      }, 3000);
     }
   }, [finalResults]);
+  
 
   const getMedal = (rank) => {
     if (rank === 0) return "🥇";
