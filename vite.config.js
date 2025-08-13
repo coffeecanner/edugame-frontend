@@ -11,7 +11,6 @@ export default defineConfig({
   },
   build: {
     rollupOptions: {
-      external: ['lottie-react'], // 🚨 ini penting
     },
   },
 });
