@@ -190,10 +190,10 @@ const LiveLeaderboard = () => {
             </ul>
           )}
 
-          {/* Optional Lottie rocket on corner */}
-          <div className="absolute bottom-4 right-4 w-24 opacity-60">
-            <Lottie animationData={rocketAnimation} loop autoplay />
-          </div>
+          {/* <div className="absolute bottom-4 right-4 w-24 opacity-60">
+  <Lottie animationData={rocketAnimation} loop autoplay />
+</div> */}
+
         </div>
       </div>
     </div>
