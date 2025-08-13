@@ -9,5 +9,4 @@ export default defineConfig({
       '@': path.resolve(__dirname, './src'),
     },
   },
-  // Tidak perlu external: ['lottie-react'] karena bikin bundling error di Vercel
 });
