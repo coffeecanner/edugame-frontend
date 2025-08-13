@@ -6,7 +6,6 @@ import Lottie from 'lottie-react';
 import rocketAnimation from '@/assets/rocket.json'; // optional
 
 const LiveLeaderboard = () => {
-  const { roomId } = useParams();
   const navigate = useNavigate();
 
   const [leaderboard, setLeaderboard] = useState([]);
